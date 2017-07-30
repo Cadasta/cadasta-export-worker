@@ -7,7 +7,7 @@ from openpyxl import Workbook
 
 from .celery import app
 from .settings import QUEUE, BASE_URL, S3_BUCKET
-from .utils import fetch_attr, get_session, extract_followups
+from .utils import get_attr, get_session, extract_followups
 
 
 @app.task(name='{}.export'.format(QUEUE), bind=True)
@@ -37,30 +37,38 @@ class XlsExport(app.Task):
             except:
                 if resp.status_code >= 500:
                     self.retry()
+                raise
             data = resp.json()
             for obj in data['results']:
                 yield obj
 
-    @staticmethod
-    def append_missing_headers(obj, headers):
+    def _normalize_headers(self, headers):
+        return [h if isinstance(h, tuple) else (h, h) for h in headers]
+
+    def append_missing_headers(self, obj, headers):
         """
         Add any key values from the object's 'attributes' property to
         the array of headers.
         """
         for attr in obj['attributes']:
             key = 'attributes.{}'.format(attr)
-            if key not in headers:
-                headers.append(key)
+            if key not in [h[1] for h in headers]:
+                headers.append((key, key))
         return headers
 
     def create_xls(self, out_dir, name, headers, data):
-        """ Generate and upload XLS file """
+        """
+        Generate and upload XLS file.
+        headers - List of either tuples of header name (as will appear in
+            output) and attribute name (as it appears from the api) or a string
+            (if output name matches attribute name).
+        """
         wb = Workbook(write_only=True)
         sheet = wb.create_sheet(title=name)
-        sheet.append([header.split('.')[-1] for header in headers])
+        sheet.append([header[0].split('.')[-1] for header in headers])
 
         for obj in data:
-            sheet.append([fetch_attr(obj, attr) for attr in headers])
+            sheet.append([get_attr(obj, attr[1]) for attr in headers])
 
         path = os.path.join(out_dir, '{}.xlsx'.format(name))
         wb.save(path)
@@ -86,7 +94,7 @@ def parties_xls(self, org_slug, project_slug, api_key):
     url = '{base}/api/v1/organizations/{org}/projects/{proj}/parties/'
     url = url.format(base=BASE_URL, org=org_slug, proj=project_slug)
 
-    headers = ['id', 'name', 'type']
+    headers = self._normalize_headers(['id', 'name', 'type'])
     data = []
     for obj in self.fetch_data(sesh, url):
         headers = self.append_missing_headers(obj, headers)
@@ -107,11 +115,15 @@ def relationships_xls(self, org_slug, project_slug, api_key):
     and key for file generated.
     """
     sesh = get_session(api_key)
-    url = '{base}/api/v1/organizations/{org}/projects/{proj}/parties/' # TODO: Change to relationships URL
+    url = ('{base}/api/v1/organizations/{org}/projects/{proj}/'
+           'relationships/tenure/')
     url = url.format(base=BASE_URL, org=org_slug, proj=project_slug)
 
-    headers = ['id', 'name', 'type']
-    # headers = ['party_id', 'spatial_unit_id', 'tenure_type']
+    headers = self._normalize_headers([
+        ('party_id', 'party'),
+        ('spatial_unit_id', 'spatial_unit'),
+        'tenure_type'
+    ])
     data = []
     for obj in self.fetch_data(sesh, url):
         headers = self.append_missing_headers(obj, headers)
