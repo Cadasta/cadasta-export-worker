@@ -4,5 +4,8 @@ from celery import Celery
 from cadasta.workertoolbox.conf import Config
 
 
-app = Celery('app')
-app.config_from_object(Config())
+conf = Config(
+    CHORD_UNLOCK_MAX_RETRIES=30
+)
+app = Celery()
+app.config_from_object(conf)
