@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from app.subtasks.xls import locations_xls
-from app.tests.stubs.locations import RESP as stub_location_resp
+from tests.stubs.locations import RESP as stub_location_resp
 
 
 class FakeReq:
