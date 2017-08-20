@@ -1,26 +1,11 @@
-import os
 import unittest
-from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, patch, call
 
 from app.subtasks.xls import locations_xls, parties_xls, relationships_xls
 from tests.stubs.locations import RESP as stub_location_resp
 from tests.stubs.parties import RESP as stub_parties_resp
-
-
-class FakeReq:
-    id = 'fakeId'
-    _protected = False
-    called_directly = False
-
-
-class MockTemporaryDir(TemporaryDirectory):
-    def __init__(self, suffix=None, prefix=None, dir=None):
-        self.name = os.path.join(prefix or '', dir or 'fake-tmp-dir', suffix or '')
-        self._finalizer = lambda *args, **kwargs: 1
-
-    def __exit__(self, *args, **kwargs):
-        pass
+from tests.stubs.relationships import RESP as stub_relationships_resp
+from tests.stubs.utils import FakeReq, MockTemporaryDir
 
 
 class TestXls(unittest.TestCase):
@@ -77,7 +62,7 @@ class TestXls(unittest.TestCase):
         Workbook = MagicMock()
         Workbook.create_sheet.return_value = Sheet
         mock_workbook.return_value = Workbook
-        mock_upload.return_value = ('a_bucket', 'some/key.xlsx')
+        mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/parties.xlsx')
         parties_xls.__self__ = FakeReq()
         parties_xls.request_stack.push(FakeReq())
 
@@ -106,4 +91,44 @@ class TestXls(unittest.TestCase):
             'cadasta_export-tests_fakeId_/fake-tmp-dir/parties.xlsx')
         self.assertEqual(
             output,
-            [{'dst': 'key.xlsx', 'src': 's3://a_bucket/some/key.xlsx'}])
+            [{'dst': 'parties.xlsx', 'src': 's3://a_bucket/cadasta/export-tests/fakeId/parties.xlsx'}])
+
+    @patch('app.subtasks.xls.fetch_data')
+    @patch('app.utils.data.Workbook')
+    @patch('app.utils.data.upload_file')
+    @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
+    def test_relationships(self, mock_upload, mock_workbook, mock_fetch_data):
+        mock_fetch_data.return_value = stub_relationships_resp
+        Sheet = MagicMock()
+        Workbook = MagicMock()
+        Workbook.create_sheet.return_value = Sheet
+        mock_workbook.return_value = Workbook
+        mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/relationships.xlsx')
+        relationships_xls.__self__ = FakeReq()
+        relationships_xls.request_stack.push(FakeReq())
+
+        output = relationships_xls('cadasta', 'export-tests', 'my-api-key', '')
+
+        mock_fetch_data.assert_called_once_with(
+            'my-api-key',
+            ('http://localhost:8000/api/v1/'
+             'organizations/cadasta/projects/export-tests/relationships/tenure/'))
+        mock_workbook.assert_called_once_with(
+            write_only=True)
+        Workbook.create_sheet.assert_called_once_with(
+            title='relationships')
+        self.assertEqual(
+            Sheet.append.call_args_list,
+            [call(['party_id', 'spatial_unit_id', 'tenure_type', 'asal_usul_lahan2', 'asal_usul_lahan3', 'asal_usul_lahan4']),
+             call(['mutrsbhsvyi89fy54r3spewq', '3t56e3me9e9krur5ftifsjdt', 'CU', 'sertifikat, bpn, stdb, sppl', 'sendiri, warisan, beli, beli_kebunjadi', 'more_ten']),
+             call(['kj3d2k9wkuz9sykn7f93ewzg', '3t56e3me9e9krur5ftifsjdt', 'GR', 'skt', 'sendiri', 'less_ten']),
+             call(['xkrtqij77c6c8qniqwukyex3', '3t56e3me9e9krur5ftifsjdt', 'WR', 'tanah_adat', 'beli_kebunjadi', 'less_ten']),
+             call(['duqwrmus556cxxetutpsxewz', '3t56e3me9e9krur5ftifsjdt', 'MR', 'sppl', 'lainnya2', 'less_ten'])])
+        Workbook.save.assert_called_once_with(
+            'cadasta_export-tests_fakeId_/fake-tmp-dir/relationships.xlsx')
+        mock_upload.assert_called_once_with(
+            'cadasta/export-tests/fakeId/relationships.xlsx',
+            'cadasta_export-tests_fakeId_/fake-tmp-dir/relationships.xlsx')
+        self.assertEqual(
+            output,
+            [{'dst': 'relationships.xlsx', 'src': 's3://a_bucket/cadasta/export-tests/fakeId/relationships.xlsx'}])

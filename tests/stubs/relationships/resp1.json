@@ -1,0 +1,43 @@
+{
+    "count": 4,
+    "next": "http://localhost:8000/api/v1/organizations/cadasta/projects/export-tests/relationships/tenure/?limit=2&offset=2",
+    "previous": null,
+    "results": [
+        {
+            "id": "ry9569w5zzqwrgsbjg4k4qmb",
+            "party": "mutrsbhsvyi89fy54r3spewq",
+            "spatial_unit": "3t56e3me9e9krur5ftifsjdt",
+            "tenure_type": "CU",
+            "attributes": {
+                "asal_usul_lahan2": [
+                    "sertifikat",
+                    "bpn",
+                    "stdb",
+                    "sppl"
+                ],
+                "asal_usul_lahan3": [
+                    "sendiri",
+                    "warisan",
+                    "beli",
+                    "beli_kebunjadi"
+                ],
+                "asal_usul_lahan4": "more_ten"
+            }
+        },
+        {
+            "id": "eqdri7z5zw62ag9g3vcxs9p2",
+            "party": "kj3d2k9wkuz9sykn7f93ewzg",
+            "spatial_unit": "3t56e3me9e9krur5ftifsjdt",
+            "tenure_type": "GR",
+            "attributes": {
+                "asal_usul_lahan2": [
+                    "skt"
+                ],
+                "asal_usul_lahan3": [
+                    "sendiri"
+                ],
+                "asal_usul_lahan4": "less_ten"
+            }
+        }
+    ]
+}

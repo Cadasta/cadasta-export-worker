@@ -1,0 +1,37 @@
+{
+    "count": 4,
+    "next": null,
+    "previous": "http://localhost:8000/api/v1/organizations/cadasta/projects/export-tests/relationships/tenure/?limit=2",
+    "results": [
+        {
+            "id": "5c2zv8scwhpfvniv6dwcgvnc",
+            "party": "xkrtqij77c6c8qniqwukyex3",
+            "spatial_unit": "3t56e3me9e9krur5ftifsjdt",
+            "tenure_type": "WR",
+            "attributes": {
+                "asal_usul_lahan2": [
+                    "tanah_adat"
+                ],
+                "asal_usul_lahan3": [
+                    "beli_kebunjadi"
+                ],
+                "asal_usul_lahan4": "less_ten"
+            }
+        },
+        {
+            "id": "b7uui6bprzy8b8uhrd8v249y",
+            "party": "duqwrmus556cxxetutpsxewz",
+            "spatial_unit": "3t56e3me9e9krur5ftifsjdt",
+            "tenure_type": "MR",
+            "attributes": {
+                "asal_usul_lahan2": [
+                    "sppl"
+                ],
+                "asal_usul_lahan3": [
+                    "lainnya2"
+                ],
+                "asal_usul_lahan4": "less_ten"
+            }
+        }
+    ]
+}
