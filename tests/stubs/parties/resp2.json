@@ -1,0 +1,31 @@
+{
+    "count": 4,
+    "next": null,
+    "previous": "http://localhost:8000/api/v1/organizations/cadasta/projects/export-tests/parties/?limit=2",
+    "results": [
+        {
+            "id": "mutrsbhsvyi89fy54r3spewq",
+            "name": "Bob",
+            "type": "IN",
+            "attributes": {
+                "telphp": 1234,
+                "desa": "My Village",
+                "suku": "My Tribe",
+                "dusun": "My Hamlet",
+                "nama_pemilik": "Bob's Uncle"
+            }
+        },
+        {
+            "id": "xkrtqij77c6c8qniqwukyex3",
+            "name": "Corp",
+            "type": "CO",
+            "attributes": {
+                "telphp": 234523,
+                "desa": "",
+                "suku": "",
+                "dusun": "",
+                "nama_pemilik": ""
+            }
+        }
+    ]
+}

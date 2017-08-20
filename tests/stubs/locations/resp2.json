@@ -1,7 +1,7 @@
 {
     "count": 4,
     "next": null,
-    "previous": "http://localhost:8000/api/v1/organizations/an_org/projects/a_proj/spatial/?limit=2",
+    "previous": "http://localhost:8000/api/v1/organizations/cadasta/projects/export-tests/spatial/?limit=2",
     "results": {
         "type": "FeatureCollection",
         "features": [

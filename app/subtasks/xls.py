@@ -23,6 +23,7 @@ def locations_xls(self, org_slug, project_slug, api_key, out_dir):
         ('geometry.ewkt', 'geometry'),
         ('tenure_type', 'properties.type')
     ]
+    header_len = len(headers)
     data = []
     for resp in fetch_data(api_key, url, array_response=False):
         for obj in resp['features']:
@@ -32,6 +33,7 @@ def locations_xls(self, org_slug, project_slug, api_key, out_dir):
             data.append(obj)
 
     key_prefix = os.path.join(org_slug, project_slug, self.request.id)
+    headers = data_utils.order_headers(headers, header_len)
     src = data_utils.create_and_upload_xls(
         key_prefix, 'locations', headers, data)
     return [data_utils.get_zipstream_payload(src, out_dir)]
@@ -48,12 +50,14 @@ def parties_xls(self, org_slug, project_slug, api_key, out_dir):
     url = url.format(base=BASE_URL, org=org_slug, proj=project_slug)
 
     headers = ['id', 'name', 'type']
+    header_len = len(headers)
     data = []
     for obj in fetch_data(api_key, url):
         headers = data_utils.append_missing_headers(obj, headers)
         data.append(obj)
 
     key_prefix = os.path.join(org_slug, project_slug, self.request.id)
+    headers = data_utils.order_headers(headers, header_len)
     src = data_utils.create_and_upload_xls(
         key_prefix, 'parties', headers, data)
     return [data_utils.get_zipstream_payload(src, out_dir)]
@@ -75,12 +79,14 @@ def relationships_xls(self, org_slug, project_slug, api_key, out_dir):
         ('spatial_unit_id', 'spatial_unit'),
         'tenure_type'
     ]
+    header_len = len(headers)
     data = []
     for obj in fetch_data(api_key, url):
         headers = data_utils.append_missing_headers(obj, headers)
         data.append(obj)
 
     key_prefix = os.path.join(org_slug, project_slug, self.request.id)
+    headers = data_utils.order_headers(headers, header_len)
     src = data_utils.create_and_upload_xls(
         key_prefix, 'relationships', headers, data)
     return [data_utils.get_zipstream_payload(src, out_dir)]

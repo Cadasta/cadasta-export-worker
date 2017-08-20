@@ -65,7 +65,6 @@ def append_missing_headers(obj, headers, attrs='attributes'):
     Add any key values from the object's attributes property to
     the array of headers.
     """
-    # TODO: Sort new attributes alphabetically
     attributes = get_attr(obj, attrs)
     headers = normalize_headers(headers)
     for attr in attributes:
@@ -73,6 +72,10 @@ def append_missing_headers(obj, headers, attrs='attributes'):
         if key not in [h[1] for h in headers]:
             headers.append((key, key))
     return headers
+
+
+def order_headers(headers, order_after):
+    return headers[:order_after] + sorted(headers[order_after:])
 
 
 def get_zipstream_payload(src, out_dir, out_name=None):

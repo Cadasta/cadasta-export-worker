@@ -1,0 +1,31 @@
+{
+    "count": 4,
+    "next": "http://localhost:8000/api/v1/organizations/cadasta/projects/export-tests/parties/?limit=2&offset=2",
+    "previous": null,
+    "results": [
+        {
+            "id": "ueac4p3dw9jtm8vybmeg545p",
+            "name": "A",
+            "type": "GR",
+            "attributes": {
+                "telphp": 12,
+                "desa": "",
+                "suku": "foo",
+                "dusun": "",
+                "nama_pemilik": "asd"
+            }
+        },
+        {
+            "id": "duqwrmus556cxxetutpsxewz",
+            "name": "B",
+            "type": "GR",
+            "attributes": {
+                "telphp": 25,
+                "desa": "",
+                "suku": "",
+                "dusun": "",
+                "nama_pemilik": ""
+            }
+        }
+    ]
+}
