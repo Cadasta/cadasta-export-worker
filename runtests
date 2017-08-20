@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 import sys
 import subprocess
 import unittest
@@ -41,8 +42,8 @@ def is_set(flag):
 
 
 def run_tests(args):
+    os.environ.setdefault('S3_BUCKET', 'test_bucket')
     suite = unittest.TestLoader().discover('./app/tests')
-    # import pudb; pu.db
     results = unittest.TextTestRunner().run(suite)
     if results.errors or results.failures:
         err("Tests failed.")
