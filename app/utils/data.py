@@ -19,12 +19,12 @@ def get_attr(obj, attr):
 def create_xls(out_dir, name, headers, data):
     """
     Generate and upload XLS file.
-    out_dir - Dir where generated XLS file is to be stored.
-    name - Name for XLS file and XLS file's sheet.
-    headers - List of either tuples of header name (as will appear in
-        output) and attribute name (as it appears from the api) or a string
-        (if output name matches attribute name).
-    data - array of arrays representing rows.
+        out_dir - Dir where generated XLS file is to be stored.
+        name - Name for XLS file and XLS file's sheet.
+        headers - List of either tuples of header name (as will appear in
+            output) and attribute name (as it appears from the api) or a
+            string (if output name matches attribute name).
+        data - array of dictionaries representing rows.
     """
     headers = normalize_headers(headers)
     wb = Workbook(write_only=True)

@@ -9,5 +9,3 @@ def gen_response():
     for path in paths:
         for obj in json.load(open(path, 'r'))['results']:
             yield obj
-
-RESP = gen_response()

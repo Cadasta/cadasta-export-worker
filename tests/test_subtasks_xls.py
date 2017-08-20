@@ -2,35 +2,46 @@ import unittest
 from unittest.mock import MagicMock, patch, call
 
 from app.subtasks.xls import locations_xls, parties_xls, relationships_xls
-from tests.stubs.locations import RESP as stub_location_resp
-from tests.stubs.parties import RESP as stub_parties_resp
-from tests.stubs.relationships import RESP as stub_relationships_resp
+from tests.stubs.locations import gen_response as gen_location_resp
+from tests.stubs.parties import gen_response as gen_parties_resp
+from tests.stubs.relationships import gen_response as gen_relationships_resp
 from tests.stubs.utils import FakeReq, MockTemporaryDir
 
 
-class TestXls(unittest.TestCase):
+class TestXlsLocation(unittest.TestCase):
+
+    def tearDown(self):
+        locations_xls.__self__ = None
+        locations_xls.request_stack.stack.clear()
 
     @patch('app.subtasks.xls.fetch_data')
     @patch('app.utils.data.Workbook')
     @patch('app.utils.data.upload_file')
     @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
     def test_location(self, mock_upload, mock_workbook, mock_fetch_data):
-        mock_fetch_data.return_value = stub_location_resp
+        # Mock API
+        mock_fetch_data.return_value = gen_location_resp()
+        # Mock XLS Create
         Sheet = MagicMock()
         Workbook = MagicMock()
         Workbook.create_sheet.return_value = Sheet
         mock_workbook.return_value = Workbook
+        # Mock S3
         mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/locations.xlsx')
+        # Mock Celery Request
         locations_xls.__self__ = FakeReq()
         locations_xls.request_stack.push(FakeReq())
 
+        # Call Func
         output = locations_xls('cadasta', 'export-tests', 'my-api-key', '')
 
+        # Test API
         mock_fetch_data.assert_called_once_with(
             'my-api-key',
             ('http://localhost:8000/api/v1/'
              'organizations/cadasta/projects/export-tests/spatial/'),
             array_response=False)
+        # Test Excel
         mock_workbook.assert_called_once_with(
             write_only=True)
         Workbook.create_sheet.assert_called_once_with(
@@ -45,9 +56,11 @@ class TestXls(unittest.TestCase):
             ])
         Workbook.save.assert_called_once_with(
             'cadasta_export-tests_fakeId_/fake-tmp-dir/locations.xlsx')
+        # Test S3
         mock_upload.assert_called_once_with(
             'cadasta/export-tests/fakeId/locations.xlsx',
             'cadasta_export-tests_fakeId_/fake-tmp-dir/locations.xlsx')
+        # Test Output
         self.assertEqual(
             output,
             [{'dst': 'locations.xlsx', 'src': 's3://a_bucket/cadasta/export-tests/fakeId/locations.xlsx'}])
@@ -56,22 +69,68 @@ class TestXls(unittest.TestCase):
     @patch('app.utils.data.Workbook')
     @patch('app.utils.data.upload_file')
     @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
-    def test_parties(self, mock_upload, mock_workbook, mock_fetch_data):
-        mock_fetch_data.return_value = stub_parties_resp
+    def test_location(self, mock_upload, mock_workbook, mock_fetch_data):
+        # Mock API
+        mock_fetch_data.return_value = gen_location_resp()
+        # Mock XLS Create
         Sheet = MagicMock()
         Workbook = MagicMock()
         Workbook.create_sheet.return_value = Sheet
         mock_workbook.return_value = Workbook
+        # Mock S3
+        mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/locations.xlsx')
+        # Mock Celery Request
+        locations_xls.__self__ = FakeReq()
+        locations_xls.request_stack.push(FakeReq())
+
+        # Call Func
+        output = locations_xls('cadasta', 'export-tests', 'my-api-key', 'foo')
+
+        # Test API
+        mock_fetch_data.assert_called_once_with(
+            'my-api-key',
+            ('http://localhost:8000/api/v1/'
+             'organizations/cadasta/projects/export-tests/spatial/'),
+            array_response=False)
+        # Test Output
+        self.assertEqual(
+            output,
+            [{'dst': 'foo/locations.xlsx', 'src': 's3://a_bucket/cadasta/export-tests/fakeId/locations.xlsx'}])
+
+
+class TestXlsParties(unittest.TestCase):
+
+    def tearDown(self):
+        parties_xls.__self__ = None
+        parties_xls.request_stack.stack.clear()
+
+    @patch('app.subtasks.xls.fetch_data')
+    @patch('app.utils.data.Workbook')
+    @patch('app.utils.data.upload_file')
+    @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
+    def test_parties(self, mock_upload, mock_workbook, mock_fetch_data):
+        # Mock API
+        mock_fetch_data.return_value = gen_parties_resp()
+        # Mock XLS Create
+        Sheet = MagicMock()
+        Workbook = MagicMock()
+        Workbook.create_sheet.return_value = Sheet
+        mock_workbook.return_value = Workbook
+        # Mock S3
         mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/parties.xlsx')
+        # Mock Celery Request
         parties_xls.__self__ = FakeReq()
         parties_xls.request_stack.push(FakeReq())
 
+        # Call Func
         output = parties_xls('cadasta', 'export-tests', 'my-api-key', '')
 
+        # Test API
         mock_fetch_data.assert_called_once_with(
             'my-api-key',
             ('http://localhost:8000/api/v1/'
              'organizations/cadasta/projects/export-tests/parties/'))
+        # Test Excel
         mock_workbook.assert_called_once_with(
             write_only=True)
         Workbook.create_sheet.assert_called_once_with(
@@ -86,9 +145,11 @@ class TestXls(unittest.TestCase):
             ])
         Workbook.save.assert_called_once_with(
             'cadasta_export-tests_fakeId_/fake-tmp-dir/parties.xlsx')
+        # Test S3
         mock_upload.assert_called_once_with(
             'cadasta/export-tests/fakeId/parties.xlsx',
             'cadasta_export-tests_fakeId_/fake-tmp-dir/parties.xlsx')
+        # Test Output
         self.assertEqual(
             output,
             [{'dst': 'parties.xlsx', 'src': 's3://a_bucket/cadasta/export-tests/fakeId/parties.xlsx'}])
@@ -97,22 +158,62 @@ class TestXls(unittest.TestCase):
     @patch('app.utils.data.Workbook')
     @patch('app.utils.data.upload_file')
     @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
-    def test_relationships(self, mock_upload, mock_workbook, mock_fetch_data):
-        mock_fetch_data.return_value = stub_relationships_resp
+    def test_parties_w_outdir(self, mock_upload, mock_workbook, mock_fetch_data):
+        # Mock API
+        mock_fetch_data.return_value = gen_parties_resp()
+        # Mock XLS Create
         Sheet = MagicMock()
         Workbook = MagicMock()
         Workbook.create_sheet.return_value = Sheet
         mock_workbook.return_value = Workbook
+        # Mock S3
+        mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/parties.xlsx')
+        # Mock Celery Request
+        parties_xls.__self__ = FakeReq()
+        parties_xls.request_stack.push(FakeReq())
+
+        # Call Func
+        output = parties_xls('cadasta', 'export-tests', 'my-api-key', 'asdf')
+
+        # Test Output
+        self.assertEqual(
+            output,
+            [{'dst': 'asdf/parties.xlsx', 'src': 's3://a_bucket/cadasta/export-tests/fakeId/parties.xlsx'}])
+
+
+class TestXlsRelationships(unittest.TestCase):
+
+    def tearDown(self):
+        relationships_xls.__self__ = None
+        relationships_xls.request_stack.stack.clear()
+
+    @patch('app.subtasks.xls.fetch_data')
+    @patch('app.utils.data.Workbook')
+    @patch('app.utils.data.upload_file')
+    @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
+    def test_relationships(self, mock_upload, mock_workbook, mock_fetch_data):
+        # Mock API
+        mock_fetch_data.return_value = gen_relationships_resp()
+        # Mock XLS Create
+        Sheet = MagicMock()
+        Workbook = MagicMock()
+        Workbook.create_sheet.return_value = Sheet
+        mock_workbook.return_value = Workbook
+        # Mock S3
         mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/relationships.xlsx')
+        # Mock Celery Request
         relationships_xls.__self__ = FakeReq()
         relationships_xls.request_stack.push(FakeReq())
 
+        # Call Func
         output = relationships_xls('cadasta', 'export-tests', 'my-api-key', '')
 
+        # Test API
         mock_fetch_data.assert_called_once_with(
             'my-api-key',
             ('http://localhost:8000/api/v1/'
              'organizations/cadasta/projects/export-tests/relationships/tenure/'))
+        # Test Excel
         mock_workbook.assert_called_once_with(
             write_only=True)
         Workbook.create_sheet.assert_called_once_with(
@@ -126,9 +227,37 @@ class TestXls(unittest.TestCase):
              call(['duqwrmus556cxxetutpsxewz', '3t56e3me9e9krur5ftifsjdt', 'MR', 'sppl', 'lainnya2', 'less_ten'])])
         Workbook.save.assert_called_once_with(
             'cadasta_export-tests_fakeId_/fake-tmp-dir/relationships.xlsx')
+        # Test S3
         mock_upload.assert_called_once_with(
             'cadasta/export-tests/fakeId/relationships.xlsx',
             'cadasta_export-tests_fakeId_/fake-tmp-dir/relationships.xlsx')
+        # Test Output
         self.assertEqual(
             output,
             [{'dst': 'relationships.xlsx', 'src': 's3://a_bucket/cadasta/export-tests/fakeId/relationships.xlsx'}])
+
+    @patch('app.subtasks.xls.fetch_data')
+    @patch('app.utils.data.Workbook')
+    @patch('app.utils.data.upload_file')
+    @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
+    def test_relationships_w_outdir(self, mock_upload, mock_workbook, mock_fetch_data):
+        # Mock API
+        mock_fetch_data.return_value = gen_relationships_resp()
+        # Mock XLS Create
+        Sheet = MagicMock()
+        Workbook = MagicMock()
+        Workbook.create_sheet.return_value = Sheet
+        mock_workbook.return_value = Workbook
+        # Mock S3
+        mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/relationships.xlsx')
+        # Mock Celery Request
+        relationships_xls.__self__ = FakeReq()
+        relationships_xls.request_stack.push(FakeReq())
+
+        # Call Func
+        output = relationships_xls('cadasta', 'export-tests', 'my-api-key', 'baz')
+
+        # Test Output
+        self.assertEqual(
+            output,
+            [{'dst': 'baz/relationships.xlsx', 'src': 's3://a_bucket/cadasta/export-tests/fakeId/relationships.xlsx'}])

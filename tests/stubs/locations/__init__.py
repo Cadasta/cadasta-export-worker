@@ -2,8 +2,9 @@ import os
 import json
 
 
-RESP = [
-    json.load(
-        open('{}/resp{}.json'.format(os.path.dirname(__file__), i), 'r')
-    )['results'] for i in range(1, 3)
-]
+def gen_response():
+    paths = [
+        '{}/resp{}.json'.format(os.path.dirname(__file__), i)
+        for i in range(1, 3)]
+    for path in paths:
+        yield json.load(open(path, 'r'))['results']

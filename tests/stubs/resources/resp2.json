@@ -1,0 +1,41 @@
+{
+    "count": 4,
+    "next": "http://localhost:8000/api/v1/organizations/cadasta/projects/export-tests/resources/?limit=2&offset=2",
+    "previous": null,
+    "results": [
+        {
+            "id": "3",
+            "name": "foo_3",
+            "description": null,
+            "file": "https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img3.jpg",
+            "original_file": "baz0",
+            "archived": false,
+            "mime_type": "",
+            "links": [
+                {
+                    "id": "abcd",
+                    "type": "project"
+                }
+            ]
+        },
+        {
+            "id": "4",
+            "name": "foo_4",
+            "description": null,
+            "file": "https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img4.jpg",
+            "original_file": "baz1",
+            "archived": false,
+            "mime_type": "",
+            "links": [
+                {
+                    "id": "export-tests",
+                    "type": "project"
+                },
+                {
+                    "id": "export-tests",
+                    "type": "project"
+                }
+            ]
+        }
+    ]
+}

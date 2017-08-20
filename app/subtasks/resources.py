@@ -24,7 +24,8 @@ def export_resources(self, org_slug, project_slug, api_key, out_dir):
         fname_count = filename_cache.setdefault(fname, 0)
         filename_cache[fname] += 1
         if fname_count:
-            name, ext = fname.split('.', 1)
+            split = fname.split('.', 1)
+            name, ext = (split if len(split) == 2 else split[0], '')
             fname = '{}_{}{}'.format(name, fname_count, ext)
         bundle_paths.append((obj['file'], fname))
 
@@ -33,15 +34,11 @@ def export_resources(self, org_slug, project_slug, api_key, out_dir):
         for l in obj['links']:
             links.setdefault(l['type'], []).append(l['id'])
 
-        rows.append([
-            obj['id'],
-            obj['name'],
-            obj['description'],
-            obj['original_file'],
-            ', '.join(links.get('locations', [])),
-            ', '.join(links.get('parties', [])),
-            ', '.join(links.get('tenurerelationship', [])),
-        ])
+        obj['locations'] = ', '.join(links.get('locations', []))
+        obj['parties'] = ', '.join(links.get('parties', []))
+        obj['tenurerelationship'] = ', '.join(
+            links.get('tenurerelationship', []))
+        rows.append(obj)
 
     key_prefix = os.path.join(org_slug, project_slug, self.request.id)
     xls_path = create_and_upload_xls(key_prefix, 'resources', headers, rows)
