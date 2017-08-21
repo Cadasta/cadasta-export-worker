@@ -5,7 +5,7 @@ import fiona
 
 from ..celery import app
 from ..settings import QUEUE, BASE_URL
-from ..utils.api import fetch_data, upload_dir
+from ..utils.api import fetch_data, upload_dir, upload_file
 from ..utils.data import get_zipstream_payload
 
 
@@ -21,6 +21,7 @@ def export_shp(self, org_slug, project_slug, api_key, out_dir):
             features.setdefault(feature['geometry']['type'], []).append(feature)
 
     output = []
+
     # Write features to shapefile by type, upload
     for feature_type, layers in features.items():
         dir_prefix = '{}_{}_shp'.format(org_slug, project_slug).replace('/', '_')
@@ -59,8 +60,17 @@ def export_shp(self, org_slug, project_slug, api_key, out_dir):
 
             key_prefix = os.path.join(org_slug, project_slug, self.request.id)
             key_prefix = os.path.join(key_prefix, 'shp', feature_type)
+            # Upload and store links
             output.extend([
                 get_zipstream_payload('s3://{}/{}'.format(key, bucket), out_dir)
                 for key, bucket in upload_dir(key_prefix, tmpdir)
             ])
+
+    # Add README.txt
+    readme_path = os.path.join(
+        os.path.dirname(__file__), '..', 'templates', 'shp_readme.txt')
+    bucket, key = upload_file('README.txt', readme_path)
+    payload = get_zipstream_payload('s3://{}/{}'.format(bucket, key), out_dir)
+    output.append(payload)
+
     return output
