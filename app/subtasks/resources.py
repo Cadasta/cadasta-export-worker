@@ -11,8 +11,8 @@ def export_resources(self, org_slug, project_slug, api_key, out_dir):
     url = '{base}/api/v1/organizations/{org}/projects/{proj}/resources/'
     url = url.format(base=BASE_URL, org=org_slug, proj=project_slug)
 
-    bundle_paths = []
-    headers = ['id', 'name', 'description', 'original_file',
+    bundle_src_outnames = []
+    headers = ['id', 'name', 'description', 'original_file', 'filename',
                'locations', 'parties',
                ('tenure relationship', 'tenurerelationship')]
     rows = []
@@ -21,13 +21,16 @@ def export_resources(self, org_slug, project_slug, api_key, out_dir):
     for obj in fetch_data(api_key, url):
         # Get bundle
         fname = obj['original_file']
-        fname_count = filename_cache.setdefault(fname, 0)
+        fname_count = filename_cache.setdefault(fname, 1)
         filename_cache[fname] += 1
-        if fname_count:
+        if fname_count > 1:
             split = fname.split('.', 1)
-            name, ext = (split if len(split) == 2 else split[0], '')
+            name, ext = split if len(split) == 2 else (split[0], '')
+            if ext:
+                ext = '.{}'.format(ext)
             fname = '{}_{}{}'.format(name, fname_count, ext)
-        bundle_paths.append((obj['file'], fname))
+        obj['filename'] = fname
+        bundle_src_outnames.append((obj['file'], fname))
 
         # Generate XLS row
         links = {}
@@ -42,6 +45,6 @@ def export_resources(self, org_slug, project_slug, api_key, out_dir):
 
     key_prefix = os.path.join(org_slug, project_slug, self.request.id)
     xls_path = create_and_upload_xls(key_prefix, 'resources', headers, rows)
-    bundle_paths.append((xls_path, None))
+    bundle_src_outnames.append((xls_path, None))
     return [get_zipstream_payload(src, out_dir, out_name)
-            for (src, out_name) in bundle_paths]
+            for (src, out_name) in bundle_src_outnames]

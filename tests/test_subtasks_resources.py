@@ -7,6 +7,7 @@ from tests.stubs.utils import FakeReq, MockTemporaryDir
 
 
 class TestResources(unittest.TestCase):
+
     def tearDown(self):
         export_resources.__self__ = None
         export_resources.request_stack.stack.clear()
@@ -44,11 +45,11 @@ class TestResources(unittest.TestCase):
             title='resources')
         self.assertEqual(
             Sheet.append.call_args_list,
-            [call(['id', 'name', 'description', 'original_file', 'locations', 'parties', 'tenure relationship']),
-             call(['0', 'foo_0', None, 'baz0', '', '', '']),
-             call(['1', 'foo_1', None, 'baz1', '', '', '']),
-             call(['3', 'foo_3', None, 'baz0', '', '', '']),
-             call(['4', 'foo_4', None, 'baz1', '', '', ''])])
+            [call(['id', 'name', 'description', 'original_file', 'filename', 'locations', 'parties', 'tenure relationship']),
+             call(['0', 'foo_0', None, 'foo', 'foo', '', '', '']),
+             call(['1', 'foo_1', None, 'foo', 'foo_2', '', '', '']),
+             call(['3', 'foo_3', None, 'bar.tar.gz', 'bar.tar.gz', '', '', '']),
+             call(['4', 'foo_4', None, 'bar.tar.gz', 'bar_2.tar.gz', '', '', ''])])
         Workbook.save.assert_called_once_with(
             'cadasta_export-tests_fakeId_/fake-tmp-dir/resources.xlsx')
         # Test S3
@@ -58,13 +59,13 @@ class TestResources(unittest.TestCase):
         # Test Output
         self.assertEqual(
             output,
-            [{'dst': 'baz0',
+            [{'dst': 'foo',
               'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img1.jpg'},
-             {'dst': 'baz1',
+             {'dst': 'foo_2',
               'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img2.jpg'},
-             {'dst': 'baz0_1',
+             {'dst': 'bar.tar.gz',
               'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img3.jpg'},
-             {'dst': 'baz1_1',
+             {'dst': 'bar_2.tar.gz',
               'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img4.jpg'},
              {'dst': 'resources.xlsx',
               'src': 's3://a_bucket/cadasta/export-tests/fakeId/resources.xlsx'}])
@@ -93,13 +94,13 @@ class TestResources(unittest.TestCase):
         # Test Output
         self.assertEqual(
             output,
-            [{'dst': 'foo/baz0',
+            [{'dst': 'foo/foo',
               'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img1.jpg'},
-             {'dst': 'foo/baz1',
+             {'dst': 'foo/foo_2',
               'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img2.jpg'},
-             {'dst': 'foo/baz0_1',
+             {'dst': 'foo/bar.tar.gz',
               'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img3.jpg'},
-             {'dst': 'foo/baz1_1',
+             {'dst': 'foo/bar_2.tar.gz',
               'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img4.jpg'},
              {'dst': 'foo/resources.xlsx',
               'src': 's3://a_bucket/cadasta/export-tests/fakeId/resources.xlsx'}])

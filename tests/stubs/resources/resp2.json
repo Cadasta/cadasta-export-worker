@@ -8,7 +8,7 @@
             "name": "foo_3",
             "description": null,
             "file": "https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img3.jpg",
-            "original_file": "baz0",
+            "original_file": "bar.tar.gz",
             "archived": false,
             "mime_type": "",
             "links": [
@@ -23,7 +23,7 @@
             "name": "foo_4",
             "description": null,
             "file": "https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img4.jpg",
-            "original_file": "baz1",
+            "original_file": "bar.tar.gz",
             "archived": false,
             "mime_type": "",
             "links": [
