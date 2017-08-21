@@ -34,7 +34,11 @@ def fetch_data(api_token, url, array_response=True):
 
 
 def upload_file(key, path, bucket=S3_BUCKET):
-    """ Upload provided filepath to S3 """
+    """
+    Upload provided filepath to S3.
+        key - str, s3 keyname
+        path - str, location to file on filesystem
+    """
     client = boto3.client('s3')
     client.upload_file(path, bucket, key)
     return bucket, key
