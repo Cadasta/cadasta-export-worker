@@ -1,3 +1,5 @@
+import os
+
 import boto3
 import requests
 
@@ -36,3 +38,14 @@ def upload_file(key, path, bucket=S3_BUCKET):
     client = boto3.client('s3')
     client.upload_file(path, bucket, key)
     return bucket, key
+
+
+def upload_dir(key_prefix, dirpath, walk=True):
+    for (dirpath, _, filenames) in os.walk(dirpath):
+        for filename in filenames:
+            yield upload_file(
+                os.path.join(key_prefix, filename),
+                os.path.join(dirpath, filename)
+            )
+        if not walk:
+            break
