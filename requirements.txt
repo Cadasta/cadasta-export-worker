@@ -1,4 +1,4 @@
-cadasta-workertoolbox==0.1.12
+cadasta-workertoolbox==0.1.13
 requests==2.18.4
 openpyxl==2.4.8
 Shapely==1.5.17.post1
