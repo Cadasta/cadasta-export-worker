@@ -2,4 +2,4 @@ cadasta-workertoolbox==0.1.13
 Fiona==1.7.9.post1
 openpyxl==2.4.8
 requests==2.18.4
-Shapely==1.5.17.post1
+Shapely==1.6.0
