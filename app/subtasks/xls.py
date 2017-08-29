@@ -21,7 +21,8 @@ def locations_xls(self, org_slug, project_slug, api_key, out_dir):
     headers = [
         ('id', 'properties.id'),
         ('geometry.ewkt', 'geometry'),
-        ('tenure_type', 'properties.type')
+        ('tenure_type', 'properties.type'),
+        ('area', 'properties.area'),
     ]
     header_len = len(headers)
     data = []
