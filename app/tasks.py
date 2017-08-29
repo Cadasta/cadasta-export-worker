@@ -37,8 +37,9 @@ def export(self, org_slug, project_slug, api_key, output_type):
     callback = create_zip.s(
         filename='{}_{}.zip'.format(project_slug, output_type),
         many_results=len(tasks) > 1
-    ).set(**extract_followups(self))
+    ).set(**extract_followups(self)).set(is_result=True)
     chord(tasks)(callback)
+    return True
 
 
 @app.task(name='{}.create_zip'.format(QUEUE))
@@ -60,4 +61,11 @@ def create_zip(bundles, filename, many_results=False):
         'files': bundles
     })
     resp.raise_for_status()
-    return urljoin(ZIPSTREAM_URL, resp.json()['id'])
+    return {
+        'links': [
+            {
+                'text': filename,
+                'url': urljoin(ZIPSTREAM_URL, resp.json()['id'])
+            }
+        ]
+    }
