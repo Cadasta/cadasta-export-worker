@@ -8,7 +8,7 @@ from celery.canvas import chord
 from .celery import app
 from .settings import QUEUE, ZIPSTREAM_URL
 from .subtasks.shp import export_shp
-from .subtasks.xls import locations_xls, parties_xls, relationships_xls
+from .subtasks.xls import export_xls
 from .subtasks.resources import export_resources
 
 
@@ -20,9 +20,7 @@ def export(self, org_slug, project_slug, api_key, output_type):
     if output_type in ('xls', 'shp', 'all'):
         out_dir = '' if output_type == 'xls' else 'xls'
         tasks += [
-            locations_xls.s(*payload, out_dir=out_dir),
-            parties_xls.s(*payload, out_dir=out_dir),
-            relationships_xls.s(*payload, out_dir=out_dir),
+            export_xls.s(*payload, out_dir=out_dir),
         ]
 
     if output_type in ('res', 'all'):
