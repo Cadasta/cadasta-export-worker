@@ -6,12 +6,12 @@ from shapely.geometry import shape
 
 from ..celery import app
 from ..settings import BASE_URL, QUEUE
-from ..utils.api import fetch_data, upload_file
+from ..utils.api import fetch_data, upload_file, ZipStreamQueue
 from ..utils import data as data_utils
 
 
 @app.task(name='{}.xls'.format(QUEUE), bind=True)
-def export_xls(self, org_slug, project_slug, api_key, out_dir):
+def export_xls(self, org_slug, project_slug, api_key, bundle_url, out_dir):
     base_url = '{base}/api/v1/organizations/{org}/projects/{proj}'
     base_url = base_url.format(base=BASE_URL, org=org_slug, proj=project_slug)
 
@@ -28,8 +28,9 @@ def export_xls(self, org_slug, project_slug, api_key, out_dir):
         path = os.path.join(tmpdir, filename)
         wb.save(path)
         bucket, key = upload_file(os.path.join(prefix, filename), path)
-        src = 's3://{bucket}/{key}'.format(bucket=bucket, key=key)
-        return [data_utils.get_zipstream_payload(src, out_dir)]
+        with ZipStreamQueue(bundle_url) as q:
+            src = 's3://{bucket}/{key}'.format(bucket=bucket, key=key)
+            q.insert(data_utils.get_zipstream_payload(src, out_dir))
 
 
 def write_locations_sheet(wb, base_url, api_key):

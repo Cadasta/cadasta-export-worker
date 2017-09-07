@@ -1,5 +1,5 @@
+import os
 import datetime
-from urllib.parse import urljoin
 
 import requests
 from cadasta.workertoolbox.utils import extract_followups
@@ -14,9 +14,20 @@ from .subtasks.resources import export_resources
 
 @app.task(name='{}.export'.format(QUEUE), bind=True)
 def export(self, org_slug, project_slug, api_key, output_type):
-    payload = (org_slug, project_slug, api_key)
-    tasks = []
+    # Create ZipStream resource, pass to tasks
+    filename = '{}_{}_{}.zip'.format(
+        datetime.date.today().isoformat(),
+        project_slug,
+        output_type)
+    resp = requests.post(ZIPSTREAM_URL, json={'filename': filename})
+    resp.raise_for_status()
+    json = resp.json()
+    bundle_read_url = os.path.join(ZIPSTREAM_URL, json['id'])
+    bundle_edit_url = os.path.join(bundle_read_url, json['secret'])
 
+    # Prepare tasks
+    payload = (org_slug, project_slug, api_key, bundle_edit_url)
+    tasks = []
     if output_type in ('xls', 'shp', 'all'):
         out_dir = '' if output_type == 'xls' else 'xls'
         tasks += [
@@ -31,39 +42,23 @@ def export(self, org_slug, project_slug, api_key, output_type):
         out_dir = '' if output_type == 'shp' else 'shp'
         tasks.append(export_shp.s(*payload, out_dir=out_dir))
 
-    # TODO: assemble & upload README.md
-    callback = create_zip.s(
-        filename='{}_{}.zip'.format(project_slug, output_type),
-        many_results=len(tasks) > 1
+    # Prepare callback
+    callback = create_result.si(
+        filename, bundle_read_url
     ).set(**extract_followups(self)).set(is_result=True)
+
+    # Execute
     chord(tasks)(callback)
     return True
 
 
-@app.task(name='{}.create_zip'.format(QUEUE))
-def create_zip(bundles, filename, many_results=False):
-    """
-    filename - Filename of zip to be generated. Note that the day's date
-        will be prepended to the filename.
-    many_results - Boolean, representing if task is to take results from
-        just one task or many tasks. If many_results == True, results
-        will be flatted into single array of results.
-    """
-    # Flatten nested lists of lists
-    if many_results:
-        bundles = [payload for sublist in bundles for payload in sublist]
-
-    filename = '{}_{}'.format(datetime.date.today().isoformat(), filename)
-    resp = requests.post(ZIPSTREAM_URL, json={
-        'filename': filename,
-        'files': bundles
-    })
-    resp.raise_for_status()
+@app.task(name='{}.create_result'.format(QUEUE))
+def create_result(filename, bundle_url):
     return {
         'links': [
             {
                 'text': filename,
-                'url': urljoin(ZIPSTREAM_URL, resp.json()['id'])
+                'url': bundle_url
             }
         ]
     }
