@@ -66,10 +66,9 @@ def append_missing_headers(obj, headers, attrs='attributes'):
     the array of headers.
     """
     attributes = get_attr(obj, attrs)
-    headers = normalize_headers(headers)
     for attr in attributes:
         key = '{}.{}'.format(attrs, attr)
-        if key not in [h[1] for h in headers]:
+        if key not in [h[1] if isinstance(h, tuple) else h for h in headers]:
             headers.append((key, key))
     return headers
 

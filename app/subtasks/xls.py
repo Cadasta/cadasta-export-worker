@@ -52,6 +52,7 @@ def write_locations_sheet(wb, base_url, api_key):
             obj['geometry'] = shape(obj['geometry']).wkt
             data.append(obj)
     headers = data_utils.order_headers(headers, header_len)
+    headers = data_utils.normalize_headers(headers)
 
     sheet = wb.create_sheet('locations')
     sheet.append([header[0].split('.')[-1] for header in headers])
@@ -71,6 +72,7 @@ def write_parties_sheet(wb, base_url, api_key):
         headers = data_utils.append_missing_headers(obj, headers)
         data.append(obj)
     headers = data_utils.order_headers(headers, header_len)
+    headers = data_utils.normalize_headers(headers)
 
     sheet = wb.create_sheet('parties')
     sheet.append([header[0].split('.')[-1] for header in headers])
@@ -94,6 +96,7 @@ def write_relationships_sheet(wb, base_url, api_key):
         headers = data_utils.append_missing_headers(obj, headers)
         data.append(obj)
     headers = data_utils.order_headers(headers, header_len)
+    headers = data_utils.normalize_headers(headers)
 
     sheet = wb.create_sheet('relationships')
     sheet.append([header[0].split('.')[-1] for header in headers])
