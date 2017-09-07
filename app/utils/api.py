@@ -71,8 +71,7 @@ class ZipStreamQueue:
         return self
 
     def __exit__(self, *args, **kwargs):
-        if self.queue:
-            self.flush()
+        self.flush(force=True)
 
     def insert(self, *new_items):
         self.queue.extend(new_items)
