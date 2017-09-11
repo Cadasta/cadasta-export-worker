@@ -60,7 +60,7 @@ class ZipStreamQueue:
     Queue to manage payloads to be uploaded to zipstream service. In
     efforts to avoid hitting 'request entity too large' error on
     ZipStream server. Use as a context manager to ensure that remaining
-    elements in queue is uploaded at end of use.
+    elements in queue are uploaded at end of use.
     """
     def __init__(self, url, chunk_size=100):
         self.url = url
@@ -78,9 +78,18 @@ class ZipStreamQueue:
         self.flush()
 
     def flush(self, force=False):
-        while (len(self.queue) >= self.chunk_size) or (force and self.queue):
+
+        def queue_full():
+            return bool(len(self.queue) >= self.chunk_size)
+
+        def should_force():
+            return bool(force and self.queue)
+
+        while queue_full() or should_force():
+            # Upload chunk
             resp = requests.put(self.url, json={
                 'files': self.queue[:self.chunk_size]
             })
             resp.raise_for_status()
+            # Rm chunk from queue
             self.queue = self.queue[self.chunk_size:]
