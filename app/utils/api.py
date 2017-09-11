@@ -19,12 +19,8 @@ def fetch_data(api_token, url, array_response=True):
     sesh = get_session(api_token)
     data = {'next': url}
     while data['next']:
-        try:
-            resp = sesh.get(data['next'])
-            resp.raise_for_status()
-        except:
-            if resp.status_code >= 500:
-                raise
+        resp = sesh.get(data['next'])
+        resp.raise_for_status()
         data = resp.json()
         if array_response:
             for obj in data['results']:
