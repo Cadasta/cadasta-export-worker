@@ -15,8 +15,9 @@ class TestResources(unittest.TestCase):
     @patch('app.subtasks.resources.fetch_data')
     @patch('app.utils.data.Workbook')
     @patch('app.utils.data.upload_file')
+    @patch('app.subtasks.resources.ZipStreamQueue')
     @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
-    def test_resources(self, mock_upload, mock_workbook, mock_fetch_data):
+    def test_resources(self, q, mock_upload, mock_workbook, mock_fetch_data):
         # Mock API
         mock_fetch_data.return_value = gen_resources_resp()
         # Mock XLS Create
@@ -31,7 +32,9 @@ class TestResources(unittest.TestCase):
         export_resources.request_stack.push(FakeReq())
 
         # Call Func
-        output = export_resources('cadasta', 'export-tests', 'my-api-key', '')
+        export_resources(
+          'cadasta', 'export-tests', 'my-api-key',
+          'http://zipstream.com/bundle123', 'someDir')
 
         # Test API
         mock_fetch_data.assert_called_once_with(
@@ -45,7 +48,8 @@ class TestResources(unittest.TestCase):
             title='resources')
         self.assertEqual(
             Sheet.append.call_args_list,
-            [call(['id', 'name', 'description', 'original_file', 'filename', 'locations', 'parties', 'tenure relationship']),
+            [call(['id', 'name', 'description', 'original_file', 'filename',
+                   'locations', 'parties', 'tenure relationship']),
              call(['0', 'foo_0', None, 'foo', 'foo', '', '', '']),
              call(['1', 'foo_1', None, 'foo', 'foo_2', '', '', '']),
              call(['3', 'foo_3', None, 'bar.tar.gz', 'bar.tar.gz', '', '', '']),
@@ -57,50 +61,18 @@ class TestResources(unittest.TestCase):
             'cadasta/export-tests/fakeId/resources.xlsx',
             'cadasta_export-tests_fakeId_/fake-tmp-dir/resources.xlsx')
         # Test Output
+        s3_base = 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources'
         self.assertEqual(
-            output,
-            [{'dst': 'foo',
-              'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img1.jpg'},
-             {'dst': 'foo_2',
-              'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img2.jpg'},
-             {'dst': 'bar.tar.gz',
-              'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img3.jpg'},
-             {'dst': 'bar_2.tar.gz',
-              'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img4.jpg'},
-             {'dst': 'resources.xlsx',
-              'src': 's3://a_bucket/cadasta/export-tests/fakeId/resources.xlsx'}])
-
-    @patch('app.subtasks.resources.fetch_data')
-    @patch('app.utils.data.Workbook')
-    @patch('app.utils.data.upload_file')
-    @patch('app.utils.data.tempfile.TemporaryDirectory', MockTemporaryDir)
-    def test_resources_w_outdir(self, mock_upload, mock_workbook, mock_fetch_data):
-        # Mock API
-        mock_fetch_data.return_value = gen_resources_resp()
-        # Mock XLS Create
-        Sheet = MagicMock()
-        Workbook = MagicMock()
-        Workbook.create_sheet.return_value = Sheet
-        mock_workbook.return_value = Workbook
-        # Mock S3
-        mock_upload.return_value = ('a_bucket', 'cadasta/export-tests/fakeId/resources.xlsx')
-        # Mock Celery Request
-        export_resources.__self__ = FakeReq()
-        export_resources.request_stack.push(FakeReq())
-
-        # Call Func
-        output = export_resources('cadasta', 'export-tests', 'my-api-key', 'foo')
-
-        # Test Output
-        self.assertEqual(
-            output,
-            [{'dst': 'foo/foo',
-              'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img1.jpg'},
-             {'dst': 'foo/foo_2',
-              'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img2.jpg'},
-             {'dst': 'foo/bar.tar.gz',
-              'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img3.jpg'},
-             {'dst': 'foo/bar_2.tar.gz',
-              'src': 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources/img4.jpg'},
-             {'dst': 'foo/resources.xlsx',
-              'src': 's3://a_bucket/cadasta/export-tests/fakeId/resources.xlsx'}])
+            q.return_value.__enter__.return_value.insert.call_args_list,
+            [call({'dst': '{}/foo'.format('someDir'),
+                   'src': '{}/img1.jpg'.format(s3_base)}),
+             call({'dst': '{}/foo_2'.format('someDir'),
+                   'src': '{}/img2.jpg'.format(s3_base)}),
+             call({'dst': '{}/bar.tar.gz'.format('someDir'),
+                   'src': '{}/img3.jpg'.format(s3_base)}),
+             call({'dst': '{}/bar_2.tar.gz'.format('someDir'),
+                   'src': '{}/img4.jpg'.format(s3_base)}),
+             call({'dst': '{}/resources.xlsx'.format('someDir'),
+                   'src': 's3://a_bucket/cadasta/export-tests/fakeId/resources.xlsx'})
+             ]
+         )
