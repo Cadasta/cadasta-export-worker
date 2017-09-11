@@ -34,7 +34,7 @@ class TestResources(unittest.TestCase):
         # Call Func
         export_resources(
           'cadasta', 'export-tests', 'my-api-key',
-          'http://zipstream.com/bundle123', 'someDir')
+          'https://zipstream.com/asdf/shhh', 'someDir')
 
         # Test API
         mock_fetch_data.assert_called_once_with(
@@ -62,6 +62,9 @@ class TestResources(unittest.TestCase):
             'cadasta_export-tests_fakeId_/fake-tmp-dir/resources.xlsx')
         # Test Output
         s3_base = 'https://s3-us-west-2.amazonaws.com/cadasta-test-bucket/resources'
+        # ZipStreamQueue instanciated
+        q.assert_called_once_with('https://zipstream.com/asdf/shhh')
+        # ZipStreamQueue had file inserted
         self.assertEqual(
             q.return_value.__enter__.return_value.insert.call_args_list,
             [call({'dst': '{}/foo'.format('someDir'),

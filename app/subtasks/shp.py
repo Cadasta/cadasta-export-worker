@@ -9,8 +9,6 @@ from ..utils.api import fetch_data, upload_dir, upload_file, ZipStreamQueue
 from ..utils.data import get_zipstream_payload
 
 
-# TODO: Why are spatial queries being made to API
-
 @app.task(name='{}.shp.export'.format(QUEUE), bind=True)
 def export_shp(self, org_slug, project_slug, api_key, bundle_url, out_dir):
     url = '{base}/api/v1/organizations/{org}/projects/{proj}/spatial/'
@@ -46,7 +44,6 @@ def export_shp(self, org_slug, project_slug, api_key, bundle_url, out_dir):
                         'properties': {
                             'id': 'str',
                             'type': 'str',
-                            # 'attributes': '???'  # TODO?
                         }
                     }
                 }
