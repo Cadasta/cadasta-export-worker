@@ -10,7 +10,7 @@ from ..utils.api import fetch_data, upload_file, ZipStreamQueue
 from ..utils import data as data_utils
 
 
-@app.task(name='{}.xls'.format(QUEUE), bind=True)
+@app.task(name='{}.project.xls'.format(QUEUE), bind=True)
 def export_xls(self, org_slug, project_slug, api_key, bundle_url, out_dir):
     base_url = '{base}/api/v1/organizations/{org}/projects/{proj}'
     base_url = base_url.format(base=BASE_URL, org=org_slug, proj=project_slug)

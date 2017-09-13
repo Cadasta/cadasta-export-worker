@@ -6,7 +6,7 @@ from ..utils.api import fetch_data, ZipStreamQueue
 from ..utils.data import get_zipstream_payload, create_and_upload_xls
 
 
-@app.task(name='{}.resources.export'.format(QUEUE), bind=True)
+@app.task(name='{}.project.resources'.format(QUEUE), bind=True)
 def export_resources(self, org_slug, project_slug, api_key, bundle_url,
                      out_dir):
     url = '{base}/api/v1/organizations/{org}/projects/{proj}/resources/'
