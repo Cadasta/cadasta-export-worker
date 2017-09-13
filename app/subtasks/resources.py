@@ -47,5 +47,6 @@ def export_resources(self, org_slug, project_slug, api_key, bundle_url,
 
         # Generate/upload XLS
         key_prefix = os.path.join(org_slug, project_slug, self.request.id)
-        xls_path = create_and_upload_xls(key_prefix, 'resources', headers, rows)
+        xls_path = create_and_upload_xls(
+            key_prefix, 'resources', headers, rows)
         q.insert(get_zipstream_payload(xls_path, out_dir))

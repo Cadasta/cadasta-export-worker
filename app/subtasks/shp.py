@@ -58,11 +58,13 @@ def export_shp(self, org_slug, project_slug, api_key, bundle_url, out_dir):
                             }
                         })
 
-                key_prefix = os.path.join(org_slug, project_slug, self.request.id)
+                key_prefix = os.path.join(
+                    org_slug, project_slug, self.request.id)
                 key_prefix = os.path.join(key_prefix, 'shp', feature_type)
                 # Upload and store links
                 q.insert(*[
-                    get_zipstream_payload('s3://{}/{}'.format(key, bucket), out_dir)
+                    get_zipstream_payload(
+                        's3://{}/{}'.format(key, bucket), out_dir)
                     for key, bucket in upload_dir(key_prefix, tmpdir)
                 ])
 
@@ -70,5 +72,6 @@ def export_shp(self, org_slug, project_slug, api_key, bundle_url, out_dir):
         readme_path = os.path.join(
             os.path.dirname(__file__), '..', 'templates', 'shp_readme.txt')
         bucket, key = upload_file('README.txt', readme_path)
-        payload = get_zipstream_payload('s3://{}/{}'.format(bucket, key), out_dir)
+        payload = get_zipstream_payload(
+            's3://{}/{}'.format(bucket, key), out_dir)
         q.insert(payload)
