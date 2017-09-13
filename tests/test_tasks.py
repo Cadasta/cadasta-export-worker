@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 
 from freezegun import freeze_time
 
-from app.tasks import export, create_result
-from app.subtasks import xls, shp, resources
+from app.tasks import export
+from app.subtasks import xls, shp, resources, utils
 
 
 def prepare_mock_post(mock_post):
@@ -39,7 +39,7 @@ class TestExport(unittest.TestCase):
             shp.export_shp.s(*payload, out_dir='shp')
         ])
         chord.return_value.assert_called_once_with(
-            create_result.si(
+            utils.create_result.si(
                 '2017-08-29_my-proj_all.zip', 'http://zipstream.com/abcd1234'
             ).set(
                 is_result=True
@@ -63,7 +63,7 @@ class TestExport(unittest.TestCase):
             resources.export_resources.s(*payload, out_dir=''),
         ])
         chord.return_value.assert_called_once_with(
-            create_result.si(
+            utils.create_result.si(
                 '2017-08-29_my-proj_res.zip', 'http://zipstream.com/abcd1234'
             ).set(
                 is_result=True
@@ -89,7 +89,7 @@ class TestExport(unittest.TestCase):
             shp.export_shp.s(*payload, out_dir='')
         ])
         chord.return_value.assert_called_once_with(
-            create_result.si(
+            utils.create_result.si(
                 '2017-08-29_my-proj_shp.zip', 'http://zipstream.com/abcd1234'
             ).set(
                 is_result=True
@@ -113,7 +113,7 @@ class TestExport(unittest.TestCase):
             xls.export_xls.s(*payload, out_dir=''),
         ])
         chord.return_value.assert_called_once_with(
-            create_result.si(
+            utils.create_result.si(
                 '2017-08-29_my-proj_xls.zip', 'http://zipstream.com/abcd1234'
             ).set(
                 is_result=True
@@ -121,22 +121,4 @@ class TestExport(unittest.TestCase):
                 # TODO: Test followup extraction
                 **{'link': None, 'link_error': None}
             )
-        )
-
-
-class TestCreateResult(unittest.TestCase):
-
-    def test_create_result(self):
-        filename = 'foo.zip'
-        bundle_url = 'https://demo.cadasta.org/asdf'
-        self.assertEqual(
-            create_result(filename, bundle_url),
-            {
-                'links': [
-                    {
-                        'text': filename,
-                        'url': bundle_url
-                    }
-                ]
-            }
         )

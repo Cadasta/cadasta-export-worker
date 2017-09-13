@@ -10,9 +10,10 @@ from .settings import QUEUE, ZIPSTREAM_URL
 from .subtasks.shp import export_shp
 from .subtasks.xls import export_xls
 from .subtasks.resources import export_resources
+from .subtasks.utils import create_result
 
 
-@app.task(name='{}.export'.format(QUEUE), bind=True)
+@app.task(name='{}.project'.format(QUEUE), bind=True)
 def export(self, org_slug, project_slug, api_key, output_type):
     # Create ZipStream resource, pass to tasks
     filename = '{}_{}_{}.zip'.format(
@@ -50,15 +51,3 @@ def export(self, org_slug, project_slug, api_key, output_type):
     # Execute
     chord(tasks)(callback)
     return True
-
-
-@app.task(name='{}.create_result'.format(QUEUE))
-def create_result(filename, bundle_url):
-    return {
-        'links': [
-            {
-                'text': filename,
-                'url': bundle_url
-            }
-        ]
-    }
