@@ -1,7 +1,7 @@
 import os
 
 from ..celery import app
-from ..settings import QUEUE, BASE_URL
+from ..settings import QUEUE, PLATFORM_URL
 from ..utils.api import fetch_data, ZipStreamQueue
 from ..utils.data import get_zipstream_payload, create_and_upload_xls
 
@@ -10,7 +10,7 @@ from ..utils.data import get_zipstream_payload, create_and_upload_xls
 def export_resources(self, org_slug, project_slug, api_key, bundle_url,
                      out_dir):
     url = '{base}/api/v1/organizations/{org}/projects/{proj}/resources/'
-    url = url.format(base=BASE_URL, org=org_slug, proj=project_slug)
+    url = url.format(base=PLATFORM_URL, org=org_slug, proj=project_slug)
 
     headers = ['id', 'name', 'description', 'original_file', 'filename',
                'locations', 'parties',
