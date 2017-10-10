@@ -36,6 +36,7 @@ class TestUploadFile(unittest.TestCase):
             'path/to/file/on/disk.jpg', 'a_bucket', 'my/key.jpg')
 
 
+@patch('app.utils.api.REQ_TIMEOUT', 1)
 class TestFetchData(unittest.TestCase):
     @patch('app.utils.api.get_session')
     def test_fetch_data(self, get_session):
@@ -57,7 +58,7 @@ class TestFetchData(unittest.TestCase):
 
         self.assertEqual(
             sesh.get.call_args_list,
-            [call('http://url.com'), call('http://url.com/?page=2')]
+            [call('http://url.com', timeout=1), call('http://url.com/?page=2', timeout=1)]
         )
         for resp in sesh.get.side_effect:
             resp.raise_for_status.assert_called_once_with()
@@ -141,7 +142,7 @@ class TestFetchData(unittest.TestCase):
 
         self.assertEqual(
             sesh.get.call_args_list,
-            [call('http://url.com'), call('http://url.com/?page=2')]
+            [call('http://url.com', timeout=1), call('http://url.com/?page=2', timeout=1)]
         )
         for resp in sesh.get.side_effect:
             resp.raise_for_status.assert_called_once_with()
@@ -181,6 +182,7 @@ class TestUploadDir(unittest.TestCase):
         ])
 
 
+@patch('app.utils.api.REQ_TIMEOUT', 1)
 @patch('app.utils.api.requests')
 class TestZipStreamQueue(unittest.TestCase):
 
@@ -191,17 +193,17 @@ class TestZipStreamQueue(unittest.TestCase):
 
         self.assertEqual(
             requests.put.call_args_list, [
-                call('http://zipstream.com/foo', json={'files': [0, 1]}),
-                call('http://zipstream.com/foo', json={'files': [2, 3]}),
-                call('http://zipstream.com/foo', json={'files': [4, 5]}),
-                call('http://zipstream.com/foo', json={'files': [6, 7]}),
-                call('http://zipstream.com/foo', json={'files': [8, 9]}),
-                call('http://zipstream.com/foo', json={'files': [10, 11]}),
-                call('http://zipstream.com/foo', json={'files': [12, 13]}),
-                call('http://zipstream.com/foo', json={'files': [14, 15]}),
-                call('http://zipstream.com/foo', json={'files': [16, 17]}),
-                call('http://zipstream.com/foo', json={'files': [18, 19]}),
-                call('http://zipstream.com/foo', json={'files': [20]})
+                call('http://zipstream.com/foo', json={'files': [0, 1]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [2, 3]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [4, 5]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [6, 7]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [8, 9]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [10, 11]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [12, 13]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [14, 15]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [16, 17]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [18, 19]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [20]}, timeout=1)
             ]
         )
 
@@ -211,16 +213,16 @@ class TestZipStreamQueue(unittest.TestCase):
 
         self.assertEqual(
             requests.put.call_args_list, [
-                call('http://zipstream.com/foo', json={'files': [0, 1]}),
-                call('http://zipstream.com/foo', json={'files': [2, 3]}),
-                call('http://zipstream.com/foo', json={'files': [4, 5]}),
-                call('http://zipstream.com/foo', json={'files': [6, 7]}),
-                call('http://zipstream.com/foo', json={'files': [8, 9]}),
-                call('http://zipstream.com/foo', json={'files': [10, 11]}),
-                call('http://zipstream.com/foo', json={'files': [12, 13]}),
-                call('http://zipstream.com/foo', json={'files': [14, 15]}),
-                call('http://zipstream.com/foo', json={'files': [16, 17]}),
-                call('http://zipstream.com/foo', json={'files': [18, 19]}),
-                call('http://zipstream.com/foo', json={'files': [20]})
+                call('http://zipstream.com/foo', json={'files': [0, 1]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [2, 3]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [4, 5]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [6, 7]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [8, 9]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [10, 11]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [12, 13]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [14, 15]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [16, 17]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [18, 19]}, timeout=1),
+                call('http://zipstream.com/foo', json={'files': [20]}, timeout=1)
             ]
         )

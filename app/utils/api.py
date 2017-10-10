@@ -3,7 +3,7 @@ import os
 import boto3
 import requests
 
-from ..settings import S3_BUCKET
+from ..settings import S3_BUCKET, REQ_TIMEOUT
 
 
 def get_session(token):
@@ -19,7 +19,7 @@ def fetch_data(api_token, url, array_response=True):
     sesh = get_session(api_token)
     data = {'next': url}
     while data['next']:
-        resp = sesh.get(data['next'])
+        resp = sesh.get(data['next'], timeout=REQ_TIMEOUT)
         resp.raise_for_status()
         data = resp.json()
         if array_response:
@@ -85,7 +85,7 @@ class ZipStreamQueue:
             # Upload chunk
             resp = requests.put(self.url, json={
                 'files': self.queue[:self.chunk_size]
-            })
+            }, timeout=REQ_TIMEOUT)
             resp.raise_for_status()
             # Rm chunk from queue
             self.queue = self.queue[self.chunk_size:]

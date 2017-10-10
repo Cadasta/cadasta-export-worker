@@ -6,7 +6,7 @@ from cadasta.workertoolbox.utils import extract_followups
 from celery.canvas import chord
 
 from .celery import app
-from .settings import QUEUE, ZIPSTREAM_URL
+from .settings import QUEUE, ZIPSTREAM_URL, REQ_TIMEOUT
 from .subtasks.shp import export_shp
 from .subtasks.xls import export_xls
 from .subtasks.resources import export_resources
@@ -15,12 +15,16 @@ from .subtasks.utils import create_result
 
 @app.task(name='{}.project'.format(QUEUE), bind=True)
 def export(self, org_slug, project_slug, api_key, output_type):
+    assert output_type in ['all', 'shp', 'xls', 'res'], (
+        "Unsupported output type {!r}".format(output_type))
+
     # Create ZipStream resource, pass to tasks
     filename = '{}_{}_{}.zip'.format(
         datetime.date.today().isoformat(),
         project_slug,
         output_type)
-    resp = requests.post(ZIPSTREAM_URL, json={'filename': filename})
+    resp = requests.post(
+        ZIPSTREAM_URL, json={'filename': filename}, timeout=REQ_TIMEOUT)
     resp.raise_for_status()
     json = resp.json()
     bundle_read_url = os.path.join(ZIPSTREAM_URL, json['id'])

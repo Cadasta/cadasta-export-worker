@@ -17,6 +17,7 @@ def prepare_mock_post(mock_post):
 
 
 @freeze_time("2017-08-29")
+@patch('app.tasks.REQ_TIMEOUT', 1)
 @patch('app.tasks.ZIPSTREAM_URL', 'http://zipstream.com')
 @patch('app.tasks.requests.post')
 @patch('app.tasks.chord')
@@ -29,7 +30,8 @@ class TestExport(unittest.TestCase):
 
         post.assert_called_once_with(
             'http://zipstream.com',
-            json={'filename': '2017-08-29_my-proj_all.zip'})
+            json={'filename': '2017-08-29_my-proj_all.zip'},
+            timeout=1)
 
         payload = ('my-org', 'my-proj', 'asdf',
                    'http://zipstream.com/abcd1234/shhh')
@@ -56,7 +58,8 @@ class TestExport(unittest.TestCase):
 
         post.assert_called_once_with(
             'http://zipstream.com',
-            json={'filename': '2017-08-29_my-proj_res.zip'})
+            json={'filename': '2017-08-29_my-proj_res.zip'},
+            timeout=1)
         payload = ('my-org', 'my-proj', 'asdf',
                    'http://zipstream.com/abcd1234/shhh')
         chord.assert_called_once_with([
@@ -80,7 +83,8 @@ class TestExport(unittest.TestCase):
 
         post.assert_called_once_with(
             'http://zipstream.com',
-            json={'filename': '2017-08-29_my-proj_shp.zip'})
+            json={'filename': '2017-08-29_my-proj_shp.zip'},
+            timeout=1)
 
         payload = ('my-org', 'my-proj', 'asdf',
                    'http://zipstream.com/abcd1234/shhh')
@@ -106,7 +110,8 @@ class TestExport(unittest.TestCase):
 
         post.assert_called_once_with(
             'http://zipstream.com',
-            json={'filename': '2017-08-29_my-proj_xls.zip'})
+            json={'filename': '2017-08-29_my-proj_xls.zip'},
+            timeout=1)
         payload = ('my-org', 'my-proj', 'asdf',
                    'http://zipstream.com/abcd1234/shhh')
         chord.assert_called_once_with([
