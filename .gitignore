@@ -3,5 +3,6 @@ dist
 *.egg-info
 *.pyc
 *.log
+*.env
 .cache
 .coverage
