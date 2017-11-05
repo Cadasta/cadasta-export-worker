@@ -12,7 +12,7 @@ env:
     # DOCKER_PASSWORD
     - secure: dRyrNxZCW+qofiTReNgiyYbCEHXlU44n8SE+8zavI2KJUScS8s+OEXga3ituOhTO+72d60D1WMuMN38dhQ52WSwpW7mG4sR7FnVpio481WSplVDtFWtVDZjn7z6mNBppU0ZWVgG/0Skss3GXhHoM9BoPh71u2v4SytJQ+pGsiJl5CoGUzdo9mHNfWfaGtO72wbK71F8iYaue89z/bkneveNXXWMlzH33kC9aRyzin129O7pSXFqZvZZOLPbp21GQsr7+yfD1+PtCc13M46zIzlASo+LNaoAJvtVoAFBUmdzsyjiGY0nIDVU5gczo2GemrIvQQTlUV8CthROtM81uBHoMZZ1WvQJre+RmPf4kk1pyn6GtlBy+K8Pw59WC/vD7e1OLpVwQ/H3pRqET7dBu6f+CLn+bHFmjRG2mtZMedViDGS2yRlGCqVHQ0q3W4EV+jUovT22x3v49dT+NYiuQ1QCqlgN6Vv40vywdberG5uuqZbiPGYeeMNJzuJ6mxNQjyJmOlOWI+xfh1448y88c+F62eSFPj4YobkBMeuWQjmWkg3MFsAEdaphRQaoytHlkDjOKplPev0hdRtSMyhJrbclqV3+9EgDAzr1z0Y6c5Mr0dCSaHS9oxtg5Oolzb1cHepSiKVwZzb2aPAo+Rd3IrlpLJJWyrbFBWt+FTwUZPRQ=
     # GITHUB_TOKEN
-    - secure: "b7u5EaZVCidWMCNzAqlOYwfr+J8ACIZqsAfqqKjpWYyZu5ImHXrwB3sugl9/FA1ZDYw4BWuS/geLzb/3vQSL1ApajwCkM+XOWyFO/JozVU1FsQziHfqZIIbWjVf4oYdRAnsFtYdgI3jeWA0Z1ai7Idoz68lXvAj8M/zRk6sIMAM6lcb+f4fkeNQWtN/lFm0PiH/B2ExcLRR3KB13rLHSsqlLanh7m3TPGUdMAE1tx+PwwcUmamBFakbvKRIwEDOQcvwMLn7+cEl1uzyn+U2kWU3HRwOxR5pDV63s4Y8MXVg1+QnNN9xDG3Feby3cFTo2mIqcLvahGyDovqerbpKfhJ1ekoUXw9a7gJpMiffwnpO5qeVRJyfpDhq3bT0xYWIl0qZYjX2D6Se4evLTBbj/bhQdnwbmh+09kt94TIP2wQGPx8Xz4ytmk/fqY06vUDpXP7+8n8hE/MkD/DNih25uhNGBvzI3S5nQB/bAgLFlMFXdtqg62EYA69XpHRZxcxC4g3UH8uHP+sGd/i5PaWNAbD3A+Yj7JQO4ak1bNlQX7a0I60G36rEHaXsbLVH9XoX7CIZOUUj++zkShZEyiCVC7mDD0dt5b6HLXlO58J5V+ZHtQFntU+na5+smNelRwmX9s8zZx5RzD10lxGmjPo2b+7eFKg/00G9HqLkT7XcNAk8="
+    - secure: b7u5EaZVCidWMCNzAqlOYwfr+J8ACIZqsAfqqKjpWYyZu5ImHXrwB3sugl9/FA1ZDYw4BWuS/geLzb/3vQSL1ApajwCkM+XOWyFO/JozVU1FsQziHfqZIIbWjVf4oYdRAnsFtYdgI3jeWA0Z1ai7Idoz68lXvAj8M/zRk6sIMAM6lcb+f4fkeNQWtN/lFm0PiH/B2ExcLRR3KB13rLHSsqlLanh7m3TPGUdMAE1tx+PwwcUmamBFakbvKRIwEDOQcvwMLn7+cEl1uzyn+U2kWU3HRwOxR5pDV63s4Y8MXVg1+QnNN9xDG3Feby3cFTo2mIqcLvahGyDovqerbpKfhJ1ekoUXw9a7gJpMiffwnpO5qeVRJyfpDhq3bT0xYWIl0qZYjX2D6Se4evLTBbj/bhQdnwbmh+09kt94TIP2wQGPx8Xz4ytmk/fqY06vUDpXP7+8n8hE/MkD/DNih25uhNGBvzI3S5nQB/bAgLFlMFXdtqg62EYA69XpHRZxcxC4g3UH8uHP+sGd/i5PaWNAbD3A+Yj7JQO4ak1bNlQX7a0I60G36rEHaXsbLVH9XoX7CIZOUUj++zkShZEyiCVC7mDD0dt5b6HLXlO58J5V+ZHtQFntU+na5+smNelRwmX9s8zZx5RzD10lxGmjPo2b+7eFKg/00G9HqLkT7XcNAk8=
 before_install:
   # Upgrade Docker
   - sudo apt-get update
@@ -26,18 +26,21 @@ after_success:
   # Push to docker
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   - docker push $DOCKER_TAGGED_REPO;
-  - if [ $TRAVIS_BRANCH == "master" ]; then
+  - |
+    if [ $TRAVIS_BRANCH == "master" ]; then
       # Read version
       export VERSION=$(docker run -t $DOCKER_TAGGED_REPO ./getversion);
       echo "Tagging with version: $VERSION";
     fi
-  - if [ $TRAVIS_BRANCH == "master" ]; then
+  - |
+    if [ $TRAVIS_BRANCH == "master" ]; then
       # Tag docker build w/ latest and version
       docker tag $DOCKER_TAGGED_REPO $DOCKER_REPO:$VERSION;
       docker tag $DOCKER_TAGGED_REPO $DOCKER_REPO:lastest;
       docker push $DOCKER_REPO;
     fi
-  - if [ $TRAVIS_BRANCH == "master" ]; then
+  - |
+    if [ $TRAVIS_BRANCH == "master" ]; then
       # Tag git repo with version
       git config --global user.email "builds@travis-ci.com";
       git config --global user.name "Travis CI";
