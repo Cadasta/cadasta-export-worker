@@ -5,7 +5,7 @@ services:
 env:
   global:
     - DOCKER_REPO=cadasta/cadasta-export-worker
-    - GIT_REP=$DOCKER_REPO
+    - GIT_REPO=$DOCKER_REPO
     - DOCKER_TAGGED_REPO=$DOCKER_REPO:${TRAVIS_BRANCH//\//.} # Replace slashes with periods
     # DOCKER_USERNAME
     - secure: LFY4DBBI6vl7OoSTxamBEagCjFRD34rGRF5rdFNvN/8EGZFikIF0w7qM9JEfvVFNQYbnvLmC8pMJA9vDuJpGS4vQhp9D13wd/muZINTXWNOLJTBapprW1eOvxsZOVha5hACpxeWyqcuIe0C5YnSOCdw34DcaHwZrzyLNJh6Sa8OydzmUqSgrPPsGczSLul++bB8bNI6bvT6F6PE+HCwawSRdp6A8BPKq76U9nqT/ewlr59c3QOeL/cGXIp/v1IYADhkz16KhX9KoYu9WlnXyCfd+DAhzCxWRQMHdfNmDZY2M5WuKbSzh8D0hPTDE8DWgd9vC4Mzn4etdlirfDYMCJDuU8Z07UD7/AF7rXp9RMF1cJKb7PykZ0m/tddUn0lf+0Z6wuwNLQvm/73UJ3QgIWUeGj9zU7lRqvBPyGC5X9C7wUN21Xazw46Vwb01bSBFN7aVqLeDBhZAfc3pfDoMGUn5gGQiSv51wqC+uiA1CilTUY7TD/pKyckLJeb/0X1h2Raj5HjuM90bHOoJDTvjQ4ATSiG4kLYiRcMuJivAo4eA46Q6sq5vR810qLLAt/xaQE/gGA4r90j2R0DFGxdv7Ae7sIUsckH+xppX6HS/G02zFLbFTcOvNaB9/CeFIUGekP9Uv08e/aAIHSTWp5/2AJcpz3NJ661ZHo/IfY8YBeMQ=
@@ -17,10 +17,11 @@ before_install:
   # Upgrade Docker
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-script:
-  # Build and test
-  - echo "Building $DOCKER_TAGGED_REPO ($TRAVIS_COMMIT) from cache \"$CACHED_IMAGE\""
+install:
+  - echo "Building $DOCKER_TAGGED_REPO ($TRAVIS_COMMIT)""
   - docker build -t $DOCKER_TAGGED_REPO .
+script:
+  # Test
   - docker run $DOCKER_TAGGED_REPO ./runtests
 after_success:
   # Push to docker
@@ -52,5 +53,5 @@ after_success:
       git config --global user.email "builds@travis-ci.com";
       git config --global user.name "Travis CI";
       git tag $VERSION -a -m "Generated tag from TravisCI build $TRAVIS_BUILD_NUMBER";
-      git push --tags https://${GITHUB_TOKEN}@github.com/${GIT_REP}.git;
+      git push --tags https://${GITHUB_TOKEN}@github.com/${GIT_REPO}.git;
     fi
