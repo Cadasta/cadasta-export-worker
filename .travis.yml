@@ -18,7 +18,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 install:
-  - echo "Building $DOCKER_TAGGED_REPO ($TRAVIS_COMMIT)""
+  - echo "Building $DOCKER_TAGGED_REPO ($TRAVIS_COMMIT)"
   - docker build -t $DOCKER_TAGGED_REPO .
 script:
   # Test
