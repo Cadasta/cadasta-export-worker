@@ -13,16 +13,16 @@
             "mime_type": "",
             "links": [
                 {
-                    "id": "abcd",
-                    "type": "project"
+                    "id": "1",
+                    "type": "spatialunit"
                 },
                 {
-                    "id": "export-tests",
-                    "type": "project"
+                    "id": "2",
+                    "type": "party"
                 },
                 {
-                    "id": "export-tests",
-                    "type": "project"
+                    "id": "3",
+                    "type": "tenurerelationship"
                 }
             ]
         },

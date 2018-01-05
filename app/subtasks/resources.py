@@ -39,8 +39,8 @@ def export_resources(self, org_slug, project_slug, api_key, bundle_url,
             for l in obj['links']:
                 links.setdefault(l['type'], []).append(l['id'])
 
-            obj['locations'] = ', '.join(links.get('locations', []))
-            obj['parties'] = ', '.join(links.get('parties', []))
+            obj['locations'] = ', '.join(links.get('spatialunit', []))
+            obj['parties'] = ', '.join(links.get('party', []))
             obj['tenurerelationship'] = ', '.join(
                 links.get('tenurerelationship', []))
             rows.append(obj)

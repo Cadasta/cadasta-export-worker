@@ -50,10 +50,10 @@ class TestResources(unittest.TestCase):
             Sheet.append.call_args_list,
             [call(['id', 'name', 'description', 'original_file', 'filename',
                    'locations', 'parties', 'tenure relationship']),
-             call(['0', 'foo_0', None, 'foo', 'foo', '', '', '']),
+             call(['0', 'foo_0', None, 'foo', 'foo', '1', '2', '3']),
              call(['1', 'foo_1', None, 'foo', 'foo_2', '', '', '']),
              call(['3', 'foo_3', None, 'bar.tar.gz', 'bar.tar.gz', '', '', '']),
-             call(['4', 'foo_4', None, 'bar.tar.gz', 'bar_2.tar.gz', '', '', ''])])
+             call(['4', 'foo_4', None, 'bar.tar.gz', 'bar_2.tar.gz', '5', '6', ''])])
         Workbook.save.assert_called_once_with(
             'cadasta_export-tests_fakeId_/fake-tmp-dir/resources.xlsx')
         # Test S3
