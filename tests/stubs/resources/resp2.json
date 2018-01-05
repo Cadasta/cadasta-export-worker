@@ -13,7 +13,7 @@
             "mime_type": "",
             "links": [
                 {
-                    "id": "abcd",
+                    "id": "4",
                     "type": "project"
                 }
             ]
@@ -28,12 +28,12 @@
             "mime_type": "",
             "links": [
                 {
-                    "id": "export-tests",
-                    "type": "project"
+                    "id": "5",
+                    "type": "spatialunit"
                 },
                 {
-                    "id": "export-tests",
-                    "type": "project"
+                    "id": "6",
+                    "type": "party"
                 }
             ]
         }
