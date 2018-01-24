@@ -40,7 +40,7 @@ def write_locations_sheet(wb, base_url, api_key):
     headers = [
         ('id', 'properties.id'),
         ('geometry.ewkt', 'geometry'),
-        ('tenure_type', 'properties.type'),
+        ('location_type', 'properties.type'),
         ('area', 'properties.area'),
     ]
     header_len = len(headers)
