@@ -80,7 +80,7 @@ class TestXlsExport(unittest.TestCase):
         self.assertEqual(
             workbook.create_sheet.return_value.append.call_args_list,
             [
-                call(['id', 'ewkt', 'location_type', 'area', 'profil_kebun10', 'profil_kebun11', 'profil_kebun12', 'profil_kebun2', 'profil_kebun3', 'profil_kebun5', 'profil_kebun6', 'profil_kebun7', 'profil_kebun8', 'profil_kebun9']),
+                call(['id', 'ewkt', 'type', 'area', 'profil_kebun10', 'profil_kebun11', 'profil_kebun12', 'profil_kebun2', 'profil_kebun3', 'profil_kebun5', 'profil_kebun6', 'profil_kebun7', 'profil_kebun8', 'profil_kebun9']),
                 call(['3t56e3me9e9krur5ftifsjdt', 'POLYGON ((-57.65624999999999 -30.14512718337611, -58.71093750000001 -34.37971258046219, -54.66796875 -36.38591277287651, -53.173828125 -33.87041555094182, -53.173828125 -31.87755764334002, -57.12890625 -30.06909396443886, -57.65624999999999 -30.14512718337611))', 'PA', '', 4, 5, 18, 1, '', 'gelombang', 2, 3, '', '']),
                 call(['6ikwpzz5g3ynfvwrk56r9cw5', 'LINESTRING (24.92122528665211 60.14935271120949, 24.92222637615322 60.14908991700298, 24.92152698485793 60.14840732483581, 24.92051903857942 60.14867353746651, 24.92122528665211 60.14935271120949)', '', '', '', '', '', '', '', '', '', '', '', '']),
                 call(['8fcyxavzh5b3sj2jdfev3dnd', 'POLYGON ((24.92122528665211 60.14935271120949, 24.92222637615322 60.14908991700298, 24.92152698485793 60.14840732483581, 24.92051903857942 60.14867353746651, 24.92122528665211 60.14935271120949))', '', '', '', '', '', '', '', '', '', '', '', '']),
