@@ -63,6 +63,7 @@ class TestXlsExport(unittest.TestCase):
             {'src': 's3://my_bucket/a_new_key', 'dst': 'my_dir/a_new_key'})
 
     @patch('app.subtasks.xls.fetch_data')
+    @patch('app.subtasks.xls.SPATIAL_RESOURCES_LIMIT', 10)
     def test_location_sheet(self, mock_fetch_data):
         """ Ensure location sheet is created with proper data """
         # Mock API
@@ -75,7 +76,8 @@ class TestXlsExport(unittest.TestCase):
 
         xls.write_locations_sheet(workbook, base_url, api_key)
 
-        mock_fetch_data.assert_called_once_with(api_key, base_url + '/spatial/', array_response=False)
+        mock_fetch_data.assert_called_once_with(
+            api_key, base_url + '/spatial/?limit=10', array_response=False)
         workbook.create_sheet.assert_called_once_with('locations')
         self.assertEqual(
             workbook.create_sheet.return_value.append.call_args_list,
