@@ -4,7 +4,7 @@ import tempfile
 import fiona
 
 from ..celery import app
-from ..settings import QUEUE, PLATFORM_URL
+from ..settings import QUEUE, PLATFORM_URL, SPATIAL_RESOURCES_LIMIT
 from ..utils.api import fetch_data, upload_dir, upload_file, ZipStreamQueue
 from ..utils.data import get_zipstream_payload
 
@@ -13,6 +13,7 @@ from ..utils.data import get_zipstream_payload
 def export_shp(self, org_slug, project_slug, api_key, bundle_url, out_dir):
     url = '{base}/api/v1/organizations/{org}/projects/{proj}/spatial/'
     url = url.format(base=PLATFORM_URL, org=org_slug, proj=project_slug)
+    url += '?limit={}'.format(SPATIAL_RESOURCES_LIMIT)
 
     # Fetch features
     features = {}

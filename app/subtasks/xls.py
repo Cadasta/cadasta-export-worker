@@ -5,7 +5,7 @@ from openpyxl import Workbook
 from shapely.geometry import shape
 
 from ..celery import app
-from ..settings import PLATFORM_URL, QUEUE
+from ..settings import PLATFORM_URL, QUEUE, SPATIAL_RESOURCES_LIMIT
 from ..utils.api import fetch_data, upload_file, ZipStreamQueue
 from ..utils import data as data_utils
 
@@ -35,7 +35,8 @@ def export_xls(self, org_slug, project_slug, api_key, bundle_url, out_dir):
 
 
 def write_locations_sheet(wb, base_url, api_key):
-    url = '{base}/spatial/'.format(base=base_url)
+    url = '{base}/spatial/?limit={limit}'.format(
+        base=base_url, limit=SPATIAL_RESOURCES_LIMIT)
 
     headers = [
         ('id', 'properties.id'),
