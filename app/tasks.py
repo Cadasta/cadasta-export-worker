@@ -35,9 +35,7 @@ def export(self, org_slug, project_slug, api_key, output_type):
     tasks = []
     if output_type in ('xls', 'shp', 'all'):
         out_dir = '' if output_type == 'xls' else 'xls'
-        tasks += [
-            export_xls.s(*payload, out_dir=out_dir),
-        ]
+        tasks.append(export_xls.s(*payload, out_dir=out_dir))
 
     if output_type in ('res', 'all'):
         out_dir = '' if output_type == 'res' else 'resources'

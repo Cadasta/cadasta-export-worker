@@ -1,4 +1,4 @@
-cadasta-workertoolbox==0.5.0
+cadasta-workertoolbox==0.6.0
 Fiona==1.7.11.post1
 openpyxl==2.5.1
 requests==2.18.4
