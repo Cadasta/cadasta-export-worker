@@ -1,6 +1,6 @@
 cadasta-workertoolbox==0.6.0
 Fiona==1.7.11.post1
-openpyxl==2.5.2
+openpyxl==2.5.3
 requests==2.18.4
 Shapely==1.6.4.post1
 git+https://github.com/celery/kombu@0f4da  # TODO: update to 4.1.1+ when released
