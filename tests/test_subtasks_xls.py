@@ -134,10 +134,10 @@ class TestXlsExport(unittest.TestCase):
         self.assertEqual(
             workbook.create_sheet.return_value.append.call_args_list,
             [
-                call(['party_id', 'spatial_unit_id', 'tenure_type', 'asal_usul_lahan2', 'asal_usul_lahan3', 'asal_usul_lahan4']),
-                call(['mutrsbhsvyi89fy54r3spewq', '3t56e3me9e9krur5ftifsjdt', 'CU', 'sertifikat, bpn, stdb, sppl', 'sendiri, warisan, beli, beli_kebunjadi', 'more_ten']),
-                call(['kj3d2k9wkuz9sykn7f93ewzg', '3t56e3me9e9krur5ftifsjdt', 'GR', 'skt', 'sendiri', 'less_ten']),
-                call(['xkrtqij77c6c8qniqwukyex3', '3t56e3me9e9krur5ftifsjdt', 'WR', 'tanah_adat', 'beli_kebunjadi', 'less_ten']),
-                call(['duqwrmus556cxxetutpsxewz', '3t56e3me9e9krur5ftifsjdt', 'MR', 'sppl', 'lainnya2', 'less_ten'])
+                call(['id', 'party_id', 'spatial_unit_id', 'tenure_type', 'asal_usul_lahan2', 'asal_usul_lahan3', 'asal_usul_lahan4']),
+                call(['ry9569w5zzqwrgsbjg4k4qmb', 'mutrsbhsvyi89fy54r3spewq', '3t56e3me9e9krur5ftifsjdt', 'CU', 'sertifikat, bpn, stdb, sppl', 'sendiri, warisan, beli, beli_kebunjadi', 'more_ten']),
+                call(['eqdri7z5zw62ag9g3vcxs9p2', 'kj3d2k9wkuz9sykn7f93ewzg', '3t56e3me9e9krur5ftifsjdt', 'GR', 'skt', 'sendiri', 'less_ten']),
+                call(['5c2zv8scwhpfvniv6dwcgvnc', 'xkrtqij77c6c8qniqwukyex3', '3t56e3me9e9krur5ftifsjdt', 'WR', 'tanah_adat', 'beli_kebunjadi', 'less_ten']),
+                call(['b7uui6bprzy8b8uhrd8v249y', 'duqwrmus556cxxetutpsxewz', '3t56e3me9e9krur5ftifsjdt', 'MR', 'sppl', 'lainnya2', 'less_ten'])
             ]
         )

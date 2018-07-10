@@ -87,6 +87,7 @@ def write_relationships_sheet(wb, base_url, api_key):
     url = '{base}/relationships/tenure/'.format(base=base_url)
 
     headers = [
+        'id',
         ('party_id', 'party'),
         ('spatial_unit_id', 'spatial_unit'),
         'tenure_type'
