@@ -3,4 +3,4 @@ Fiona==1.7.12
 openpyxl==2.5.4
 requests==2.19.1
 Shapely==1.6.4.post1
-git+https://github.com/celery/kombu@0f4da  # TODO: update to 4.1.1+ when released
+kombu==4.2.1
