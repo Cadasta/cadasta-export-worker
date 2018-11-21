@@ -1,6 +1,6 @@
 cadasta-workertoolbox==0.6.0
 Fiona==1.8.2
-openpyxl==2.5.10
+openpyxl==2.5.11
 requests==2.20.1
 Shapely==1.6.4.post2
 kombu==4.2.1
