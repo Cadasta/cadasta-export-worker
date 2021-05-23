@@ -3,4 +3,4 @@ Fiona==1.8.19
 openpyxl==3.0.7
 requests==2.25.1
 Shapely==1.7.1
-kombu==5.0.2
+kombu==5.1.0
